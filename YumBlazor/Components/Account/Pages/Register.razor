@@ -4,9 +4,11 @@
 @using System.Text
 @using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.Rendering
 @using Microsoft.AspNetCore.WebUtilities
 @using YumBlazor.Data
 
+@inject RoleManager<IdentityRole> RoleManager
 @inject UserManager<ApplicationUser> UserManager
 @inject IUserStore<ApplicationUser> UserStore
 @inject SignInManager<ApplicationUser> SignInManager
@@ -42,10 +44,8 @@
                     </div>
                     <div class="form-floating mb-3">
                         <InputSelect class="form-select" @bind-Value="@Input.Role">
-                            @foreach (var role in Enum.GetValues(typeof(SD.Roles)))
-                            {
-                                <option value="@role">@role</option>
-                            }
+                                <option value="@SD.Role_Customer" selected>@SD.Role_Customer</option>
+                            <option value="@SD.Role_Customer">@SD.Role_Admin</option>
                         </InputSelect>
                         <label for="role">Role</label>
 
@@ -77,6 +77,15 @@
 
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
 
+    protected override Task OnInitializedAsync()
+    {
+        Input.RoleList = new SelectListItem[] { 
+            new SelectListItem { Value = SD.Role_Admin, Text = SD.Role_Admin } ,
+            new SelectListItem { Value = SD.Role_Customer, Text = SD.Role_Customer }
+    }.ToList();
+        return base.OnInitializedAsync();
+    }
+
     public async Task RegisterUser(EditContext editContext)
     {
         var user = CreateUser();
@@ -95,6 +104,23 @@
         Logger.LogInformation("User created a new account with password.");
 
         var userId = await UserManager.GetUserIdAsync(user);
+
+        //assign roles
+
+        if(Input.Role is not null)
+        {
+            if (!await RoleManager.RoleExistsAsync(SD.Role_Admin))
+            {
+                await RoleManager.CreateAsync(new IdentityRole(SD.Role_Admin));
+                await RoleManager.CreateAsync(new IdentityRole(SD.Role_Customer));
+            }
+            await UserManager.AddToRoleAsync(user, Input.Role);
+        }
+        else
+        {
+            await UserManager.AddToRoleAsync(user, SD.Role_Customer);
+        }
+
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
         var callbackUrl = NavigationManager.GetUriWithQueryParameters(
@@ -156,6 +182,6 @@
 
         public string? Role { get; set; }
 
-
+        public List<SelectListItem> RoleList { get; set; }
     }
 }
