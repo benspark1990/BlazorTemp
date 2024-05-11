@@ -45,7 +45,7 @@
                     <div class="form-floating mb-3">
                         <InputSelect class="form-select" @bind-Value="@Input.Role">
                                 <option value="@SD.Role_Customer" selected>@SD.Role_Customer</option>
-                            <option value="@SD.Role_Customer">@SD.Role_Admin</option>
+                            <option value="@SD.Role_Admin">@SD.Role_Admin</option>
                         </InputSelect>
                         <label for="role">Role</label>
 
@@ -76,15 +76,7 @@
     private string? ReturnUrl { get; set; }
 
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
-
-    protected override Task OnInitializedAsync()
-    {
-        Input.RoleList = new SelectListItem[] { 
-            new SelectListItem { Value = SD.Role_Admin, Text = SD.Role_Admin } ,
-            new SelectListItem { Value = SD.Role_Customer, Text = SD.Role_Customer }
-    }.ToList();
-        return base.OnInitializedAsync();
-    }
+   
 
     public async Task RegisterUser(EditContext editContext)
     {
@@ -182,6 +174,5 @@
 
         public string? Role { get; set; }
 
-        public List<SelectListItem> RoleList { get; set; }
     }
 }
