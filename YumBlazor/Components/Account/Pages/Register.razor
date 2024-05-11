@@ -40,6 +40,16 @@
                         <label for="confirm-password">Confirm Password</label>
                         <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
                     </div>
+                    <div class="form-floating mb-3">
+                        <InputSelect class="form-select" @bind-Value="@Input.Role">
+                            @foreach (var role in Enum.GetValues(typeof(SD.Roles)))
+                            {
+                                <option value="@role">@role</option>
+                            }
+                        </InputSelect>
+                        <label for="role">Role</label>
+
+                    </div>
                     <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
                 </EditForm>
                 
@@ -143,5 +153,9 @@
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = "";
+
+        public string? Role { get; set; }
+
+
     }
 }
