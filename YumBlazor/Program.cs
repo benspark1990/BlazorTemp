@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Syncfusion.Blazor;
 using YumBlazor.Components;
 using YumBlazor.Components.Account;
 using YumBlazor.Data;
@@ -38,7 +39,8 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 	.AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NBaF5cXmZCe0x3QXxbf1x0ZFxMZVtbRn9PIiBoS35RckVmWXhccXFSRGleVUF3");
+builder.Services.AddSyncfusionBlazor();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
