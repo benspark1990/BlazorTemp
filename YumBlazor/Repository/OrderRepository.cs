@@ -23,7 +23,7 @@ namespace YumBlazor.Repository
 
         public async Task<OrderHeader> GetAsync(int id)
         {
-            return await _db.OrderHeader.FirstOrDefaultAsync(u => u.Id == id);
+            return await _db.OrderHeader.Include(u=>u.OrderDetails).FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<IEnumerable<OrderHeader>> GetAllAsync(string? userId=null)

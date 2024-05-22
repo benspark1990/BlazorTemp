@@ -19,56 +19,44 @@ else
 				<div class="card-body">
 					<div class="mt-3 d-flex text-success display-6 card-title">
 						<div class="mr-auto">
-							Order No. : ----
-						</div>
-						@* <div class="ml-auto p-2">
-				<span class="btn btn-lg btn-outline-success">@_orderHeader.Status</span>
-				</div> *@
+						Order No. : @OrderHeader.Id
+					</div>
+					
 					</div>
 				</div>
-				<ul class="list-group list-group-flush">
-					<li class="list-group-item">
-						Name: ----
-					</li>
-					<li class="list-group-item">
-					Email: ----
-					</li>
-					<li class="list-group-item">
-					Phone: ----
-					</li>
-					<li class="list-group-item">
-					Order Status:  ----
-					</li>
-					
-							
-						
-
-				</ul>
+				<hr />
+				<div class="px-3">
+				<p>Name: @OrderHeader.Name</p>
+				<p>Email: @OrderHeader.Email</p>
+				<p>Phone: @OrderHeader.PhoneNumber</p>
+				<p>Order Status:  @OrderHeader.Status</p>
+				</div>
+			<hr />
 				<div class="card-body">
 					<h4 class="text-success">Menu Items</h4>
-					
+					@foreach(var details in OrderHeader.OrderDetails){
 						<div class="d-flex">
 							<div class="d-flex w-100 justify-content-between">
 								<p>
-									--ProductName--
+									&nbsp; -- @details.Product.Name
 								</p>
 								<p>
-									--Price x Count--
+									@details.Price.ToString("C", CultureInfo.GetCultureInfo("en-us")) x @details.Count =
 								</p>
 							</div>
 							<div class="ps-4">
-								--Total--
+								@((details.Price * details.Count).ToString("C", CultureInfo.GetCultureInfo("en-us")))
 							</div>
 
 						</div>
-
+					}
 					<hr />
-					<h4 class="text-success text-right">
-						--GRAND TOTAL--
+					<h4 class="text-success text-end">
+						@OrderHeader.OrderTotal.ToString("C", CultureInfo.GetCultureInfo("en-us"))
 					</h4>
 					<hr />
-
-					<NavLink href="" class="mt-3 btn btn-secondary">Back to Orders</NavLink>
+					
+					<NavLink href="" class="mt-3 btn btn-secondary" style="width:300px;">Back to Orders</NavLink>
 
 				</div>
 			</div>
@@ -81,7 +69,7 @@ else
 
 	[Parameter]
 	public int Id { get; set; }
-	private OrderHeader? _orderHeader = null;
+	private OrderHeader? OrderHeader = null;
 	private bool IsProcessing { get; set; } = true;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -96,7 +84,7 @@ else
 
 	private async Task GetOrderHeader()
 	{
-		_orderHeader = await _orderRepository.GetAsync(Id);
+		OrderHeader = await _orderRepository.GetAsync(Id);
 	}
 
 }
