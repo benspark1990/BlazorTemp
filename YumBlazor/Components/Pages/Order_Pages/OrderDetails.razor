@@ -2,71 +2,101 @@
 @using System.Globalization
 
 
-
-<div class="container my-5 mx-auto p-5 w-100" style="max-width: 750px;">
-    <div class="card" style="max-width: 750px;">
-        <div class="card-body">
-            <div class="mt-3 d-flex text-success display-6 card-title">
-                <div class="mr-auto">
-                    Order No. : ----
-                </div>
-
-            </div>
-        </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                Name: ----
-            </li>
-            <li class="list-group-item">
-                Email: ----
-            </li>
-            <li class="list-group-item">
-                Phone: ----
-            </li>
-            <li class="list-group-item">
-                Order Status:  ----
-            </li>
+@inject IOrderRepository _orderRepository
 
 
+@if (IsProcessing)
+{
+	<div class="position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center"
+		 style="min-height:600px;">
+		<img src="/images/loading.gif" alt="loading" />
+	</div>
+}
+else
+{
+		<div class="container my-5 mx-auto p-5 w-100" style="max-width: 750px;">
+			<div class="card" style="max-width: 750px;">
+				<div class="card-body">
+					<div class="mt-3 d-flex text-success display-6 card-title">
+						<div class="mr-auto">
+							Order No. : ----
+						</div>
+						@* <div class="ml-auto p-2">
+				<span class="btn btn-lg btn-outline-success">@_orderHeader.Status</span>
+				</div> *@
+					</div>
+				</div>
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item">
+						Name: ----
+					</li>
+					<li class="list-group-item">
+					Email: ----
+					</li>
+					<li class="list-group-item">
+					Phone: ----
+					</li>
+					<li class="list-group-item">
+					Order Status:  ----
+					</li>
+					
+							
+						
+
+				</ul>
+				<div class="card-body">
+					<h4 class="text-success">Menu Items</h4>
+					
+						<div class="d-flex">
+							<div class="d-flex w-100 justify-content-between">
+								<p>
+									--ProductName--
+								</p>
+								<p>
+									--Price x Count--
+								</p>
+							</div>
+							<div class="ps-4">
+								--Total--
+							</div>
+
+						</div>
+
+					<hr />
+					<h4 class="text-success text-right">
+						--GRAND TOTAL--
+					</h4>
+					<hr />
+
+					<NavLink href="" class="mt-3 btn btn-secondary">Back to Orders</NavLink>
+
+				</div>
+			</div>
+		</div>
 
 
-        </ul>
-        <div class="card-body">
-            <h4 class="text-success">Menu Items</h4>
-
-            <div class="d-flex">
-                <div class="d-flex w-100 justify-content-between">
-                    <p>
-                        --ProductName--
-                    </p>
-                    <p>
-                        --Price x Count--
-                    </p>
-                </div>
-                <div class="ps-4">
-                    --Total--
-                </div>
-
-            </div>
-
-            <hr />
-            <h4 class="text-success text-right">
-                --GRAND TOTAL--
-            </h4>
-            <hr />
-
-            <NavLink href="" class="mt-3 btn btn-secondary">Back to Orders</NavLink>
-
-        </div>
-    </div>
-</div>
-
-
+}
 
 @code {
 
-    [Parameter]
-    public int Id { get; set; }
+	[Parameter]
+	public int Id { get; set; }
+	private OrderHeader? _orderHeader = null;
+	private bool IsProcessing { get; set; } = true;
 
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await GetOrderHeader();
+			IsProcessing = false;
+			StateHasChanged();
+		}
+	}
+
+	private async Task GetOrderHeader()
+	{
+		_orderHeader = await _orderRepository.GetAsync(Id);
+	}
 
 }
