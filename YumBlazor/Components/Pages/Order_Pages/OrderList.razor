@@ -1,7 +1,8 @@
 ﻿@page "/order/list"
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
 @inject IOrderRepository _orderRepository
-
+@attribute [Authorize]
 @if (IsProcessing)
 {
     <div class="position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center"
@@ -37,35 +38,40 @@ else
     {
         if (firstRender)
         {
-           // await LoadOrderHeaders();
+            await LoadOrderHeaders();
             IsProcessing = false;
             StateHasChanged();
         }
-        //return base.OnAfterRenderAsync(firstRender);
     }
 
-    // private async Task LoadOrderHeaders()
-    // {
-    //     IsProcessing = true;
-    //     StateHasChanged();
-       
-    //     await CheckAuthorization();
+    private async Task LoadOrderHeaders()
+    {
+        IsProcessing = true;
+        StateHasChanged();
 
-    //     var userId = UserId;
+        await CheckAuthorization();
 
-    //     _orderHeaders = await _orderRepository.GetAllAsync();
-    //     IsProcessing = false;
-    // }
+        var userId = UserId;
+        @if (IsAdmin == true)
+        {
+            _orderHeaders = await _orderRepository.GetAllAsync();
+        }
+        else
+        {
+            _orderHeaders = await _orderRepository.GetAllAsync(userId);
+        }
+        IsProcessing = false;
+    }
 
-    // private async Task CheckAuthorization()
-    // {
-    //     if (AuthenticationState is not null)
-    //     {
-    //         var authState = await AuthenticationState;
-    //         var user = authState?.User;
+    private async Task CheckAuthorization()
+    {
+        if (AuthenticationState is not null)
+        {
+            var authState = await AuthenticationState;
+            var user = authState?.User;
 
-    //         IsAdmin = user?.IsInRole("ADMIN");
-    //         UserId = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    //     }
-    // }
+            IsAdmin = user?.IsInRole("ADMIN");
+            UserId = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+    }
 }

@@ -26,8 +26,12 @@ namespace YumBlazor.Repository
             return await _db.OrderHeader.FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<IEnumerable<OrderHeader>> GetAllAsync()
+        public async Task<IEnumerable<OrderHeader>> GetAllAsync(string? userId=null)
         {
+            if (!string.IsNullOrEmpty(userId))
+            {
+                return await _db.OrderHeader.Where(u=>u.UserId==userId).ToListAsync();
+            }
             return await _db.OrderHeader.ToListAsync();
         }
 
