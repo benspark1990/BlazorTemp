@@ -44,7 +44,7 @@ namespace YumBlazor.Services
                 LineItems = lineItems,
                 Mode = "payment",
                 SuccessUrl = $"{_navigationManager.BaseUri}order/successful/{{CHECKOUT_SESSION_ID}}",
-                CancelUrl = $"{_navigationManager.BaseUri}order/cancelled/{{CHECKOUT_SESSION_ID}}",
+                CancelUrl = $"{_navigationManager.BaseUri}cart",
             };
 
             var service = new SessionService();
