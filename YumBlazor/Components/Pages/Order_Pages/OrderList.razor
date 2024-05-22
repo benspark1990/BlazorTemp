@@ -30,6 +30,7 @@ else
                             <th>Name</th>
                             <th>Phone</th>
                             <th>Order Total</th>
+                            <th>Status</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -41,6 +42,7 @@ else
                                 <td>@obj.Name</td>
                                 <td>@obj.PhoneNumber</td>
                                 <td>@obj.OrderTotal</td>
+                                <td>@obj.Status</td>
                                 <td>
                                     <a href="@($"order/details/{obj.Id}")" class="btn btn-primary">
                                         <i class="bi bi-pencil-square"></i> Details

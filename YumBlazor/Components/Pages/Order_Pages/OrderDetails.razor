@@ -14,7 +14,7 @@
 }
 else
 {
-    <div class="container my-5 mx-auto p-5 w-100" style="max-width: 750px;">
+    <div class="container my-5 mx-auto p-5 w-100" style="max-width: 950px;">
         <div class="card" style="max-width: 750px;">
                     <div class="pt-3 text-success text-center">
                         <span class="h4"> ORDER DETAILS</span>
@@ -36,7 +36,7 @@ else
                     <div class="d-flex">
                         <div class="d-flex w-100 justify-content-between">
                             <p>
-                                &nbsp; -- @details.Product.Name
+                                &nbsp; -- @details.ProductName
                             </p>
                             <p>
                                 @details.Price.ToString("C", CultureInfo.GetCultureInfo("en-us")) x @details.Count =
@@ -56,11 +56,21 @@ else
 
                 <div class="row">
                     <div class="col-5">
-                        <NavLink href="" class="btn btn-secondary">Back to Orders</NavLink>
+                        <NavLink href="order/list" class="btn btn-secondary  m-2 p-2" style="width:150px;">Back to Orders</NavLink>
                     </div>
                     <div class="col-7 text-end">
-                        <button class="btn btn-danger">Cancelled</button>
-                        <button class="btn btn-success">Ready for Pickup</button>
+                        @if (OrderHeader.Status != SD.StatusCancelled && OrderHeader.Status != SD.StatusRefunded && OrderHeader.Status != SD.StatusCompleted)
+                        {
+                            <button class="btn btn-danger m-2 p-2" style="width:150px;" @onclick="CancelOrder">Cancelled</button>
+                            @if (OrderHeader.Status == SD.StatusApproved)
+                            {
+                                <button class="btn btn-primary m-2 p-2" @onclick="UpdateOrderStatus" style="width:150px;">Ready for Pickup</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-success m-2 p-2" @onclick="UpdateOrderStatus" style="width:150px;">Completed</button>
+                            }
+                        }
                     </div>
                 </div>
             </div>
@@ -90,6 +100,26 @@ else
     private async Task GetOrderHeader()
     {
         OrderHeader = await _orderRepository.GetAsync(Id);
+    }
+
+    private async Task UpdateOrderStatus()
+    {
+        if (OrderHeader.Status == SD.StatusApproved)
+        {
+            await _orderRepository.UpdateStatusAsync(OrderHeader.Id, SD.StatusReadyForPickUp, "");
+        }
+        else
+        {
+            if (OrderHeader.Status == SD.StatusReadyForPickUp)
+            {
+                await _orderRepository.UpdateStatusAsync(OrderHeader.Id, SD.StatusCompleted, "");
+            }
+        }
+    }
+
+    private async Task CancelOrder()
+    {
+        await _orderRepository.UpdateStatusAsync(OrderHeader.Id, SD.StatusCancelled, "");
     }
 
 }
