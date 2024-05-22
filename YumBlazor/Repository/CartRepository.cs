@@ -23,6 +23,10 @@ namespace YumBlazor.Repository
             if (cart != null)
             {
                 cart.Count += updateBy;
+                if (cart.Count <= 0)
+                {
+                    _db.Remove(cart);
+                }
             }
             else
             {
