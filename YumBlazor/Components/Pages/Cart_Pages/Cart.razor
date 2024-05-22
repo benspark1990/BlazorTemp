@@ -86,10 +86,10 @@ else
 					<div class="card mt-4 bg-light">
 						<div class="card-body">
 							<h4>
-								Grand Total: --$$--
+								Grand Total: @OrderHeader.OrderTotal.ToString("C", CultureInfo.GetCultureInfo("en-us"))
 							</h4>
 							<h4>
-								No. of Items: --COUNT--
+								No. of Items: @TotalItems
 							</h4>
 						</div>
 
@@ -108,7 +108,7 @@ else
 	private IEnumerable<ShoppingCart> ShoppingCarts = new List<ShoppingCart>();
 	[SupplyParameterFromForm]
 	private OrderHeader OrderHeader { get; set; } = new OrderHeader();
-
+	private int TotalItems { get; set; } = 0;
 	private bool IsProcessing { get; set; } = true;
 	private EditContext? editContext;
 
@@ -125,7 +125,7 @@ else
 	{
 		if (firstRender)
 		{
-			
+
 			await LoadCart();
 			IsProcessing = false;
 			StateHasChanged();
@@ -139,6 +139,13 @@ else
 			.GetAuthenticationStateAsync();
 		var user = authState.User;
 		ShoppingCarts = await _cartRepository.GetAllAsync(user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value);
+		OrderHeader.OrderTotal = 0;
+		TotalItems = 0;
+		foreach(var cart in ShoppingCarts)
+		{
+			OrderHeader.OrderTotal+= (Convert.ToDouble(cart.Product.Price) * cart.Count);
+            TotalItems += cart.Count;
+		}
 	}
 
 	private async Task UpdateCartItem(int productId, int updateBy)
