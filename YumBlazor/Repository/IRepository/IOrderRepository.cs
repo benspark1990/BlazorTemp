@@ -7,6 +7,8 @@ namespace YumBlazor.Repository.IRepository
     {
 		public Task<OrderHeader> CreateAsync(OrderHeader orderVM);
 		public Task<OrderHeader> GetAsync(int id);
-		public Task<IEnumerable<OrderHeader>> GetAllAsync();
+        public Task<OrderHeader> GetBySessionIdAsync(string sessionId);
+        public Task<OrderHeader> UpdateStatusAsync(int id, string orderStatus, string paymentIntentId);
+        public Task<IEnumerable<OrderHeader>> GetAllAsync();
 	}
 }

@@ -30,5 +30,26 @@ namespace YumBlazor.Repository
         {
             return await _db.OrderHeader.ToListAsync();
         }
+
+        public async Task<OrderHeader> GetBySessionIdAsync(string sessionId)
+        {
+            return _db.OrderHeader.FirstOrDefault(u => u.SessionId == sessionId);
+        }
+
+        public async Task<OrderHeader> UpdateStatusAsync(int id, string orderStatus, string paymentIntentId)
+        {
+            var orderFromDb = _db.OrderHeader.FirstOrDefault(u => u.Id == id);
+            if (orderFromDb != null)
+            {
+                orderFromDb.Status = orderStatus;
+                if (!string.IsNullOrEmpty(paymentIntentId))
+                {
+                    orderFromDb.PaymentIntentId = paymentIntentId;
+                }
+            }
+            await _db.SaveChangesAsync();
+            return orderFromDb;
+        }
+
     }
 }

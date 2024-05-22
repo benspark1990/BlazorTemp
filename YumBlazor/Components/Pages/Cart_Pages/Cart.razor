@@ -1,20 +1,24 @@
 ﻿@page "/cart"
 @using System.Globalization
 @using Microsoft.AspNetCore.Authorization
+@using YumBlazor.Services
 @using YumBlazor.ViewModels
 @inject ICartRepository _cartRepository
 @inject IOrderRepository _orderRepository
+@inject PaymentService _paymentService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager _navigationManager
 @attribute [Authorize]
 @if (IsProcessing)
 {
-    <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
+    <div class="position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center"
+         style="min-height:600px;">
         <img src="/images/loading.gif" alt="loading" />
     </div>
 }
 else
-{
+{ @if (ShoppingCarts.Any())
+    {
     <div class="row w-100">
         <div class="col-lg-6 col-12">
             <div class="container p-4 m-2">
@@ -22,8 +26,7 @@ else
                     Cart Summary
                 </h4>
 
-                @if (ShoppingCarts.Any())
-                {
+               
                     
                 
                 @foreach (var cartItem in ShoppingCarts)
@@ -63,13 +66,7 @@ else
                         </div>
                     </div>
                     }
-                }
-                else
-                {
-                    <div class="alert alert-warning">
-                        Your cart is empty! Please add items to cart.
-                    </div>
-                }
+              
             </div>
         </div>
         <div class="col-lg-6 col-12 p-4">
@@ -118,6 +115,15 @@ else
             </div>
         </div>
     </div>
+    }
+    else
+    {
+        <div class="p-4">
+        <div class="alert alert-warning">
+            Your cart is empty! Please add items to cart.
+        </div>
+        </div>
+    }
 }
 
 @code {
@@ -172,10 +178,13 @@ else
 
     private async Task ProcessPayment()
     {
+        IsProcessing = true;
+        await Task.Yield();
         OrderHeader.OrderDetails = SD.ConvertShoppingCartListToOrderDetails(ShoppingCarts.ToList());
-        await _orderRepository.CreateAsync(OrderHeader);
-        await _cartRepository.ClearCartAsync(OrderHeader.UserId);
 
-        _navigationManager.NavigateTo($"/order/successful/{OrderHeader.Id}");
+        var session = _paymentService.CreateStripeCheckoutSession(OrderHeader);
+        OrderHeader.SessionId = session.Id;
+        await _orderRepository.CreateAsync(OrderHeader);
+        _navigationManager.NavigateTo(session.Url);
     }
 }

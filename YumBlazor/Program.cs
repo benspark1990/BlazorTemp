@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 using Syncfusion.Blazor;
 using YumBlazor.Components;
 using YumBlazor.Components.Account;
 using YumBlazor.Data;
 using YumBlazor.Repository;
 using YumBlazor.Repository.IRepository;
+using YumBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,7 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository,OrderRepository>();
+builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
@@ -46,6 +49,7 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NBaF5cXmZCe0x3QXxbf1x0ZFxMZVtbRn9PIiBoS35RckVmWXhccXFSRGleVUF3");
 builder.Services.AddSyncfusionBlazor();
 var app = builder.Build();
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("StripApiKey").Value;
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
