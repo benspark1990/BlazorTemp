@@ -1,0 +1,23 @@
+﻿@page "/order/successful/{Id:int}"
+
+<div class="text-center" >
+    <h1 class="pt-4 text-success">You are one stop closer to delicious food!</h1>
+    <p>Your payment is successful and order is confirmed! Please note your order ID for any questions. </p>
+    <p> Order ID : @Id</p>
+    <hr>
+    <img src="/images/lawn_leaf.jpg" width="40%" />
+    <hr>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override void OnInitialized()
+    {
+       
+    }
+
+}

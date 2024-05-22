@@ -5,6 +5,7 @@
 @inject ICartRepository _cartRepository
 @inject IOrderRepository _orderRepository
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager _navigationManager
 @attribute [Authorize]
 @if (IsProcessing)
 {
@@ -156,7 +157,7 @@ else
         TotalItems = 0;
         foreach (var cart in ShoppingCarts)
         {
-            
+
             OrderHeader.OrderTotal += (Convert.ToDouble(cart.Product.Price) * cart.Count);
             TotalItems += cart.Count;
         }
@@ -174,5 +175,7 @@ else
         OrderHeader.OrderDetails = SD.ConvertShoppingCartListToOrderDetails(ShoppingCarts.ToList());
         await _orderRepository.CreateAsync(OrderHeader);
         await _cartRepository.ClearCartAsync(OrderHeader.UserId);
+
+        _navigationManager.NavigateTo($"/order/successful/{OrderHeader.Id}");
     }
 }
