@@ -99,7 +99,7 @@ else
             var authState = await AuthenticationState;
             var user = authState?.User;
 
-            IsAdmin = user?.IsInRole("ADMIN");
+            IsAdmin = user?.IsInRole(SD.Role_Admin);
             UserId = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
     }
