@@ -21,6 +21,10 @@ else
                     Cart Summary
                 </h4>
 
+                @if (ShoppingCarts.Any())
+                {
+                    
+                
                 @foreach (var cartItem in ShoppingCarts)
                 {
                     <div class="d-flex p-2 m-2">
@@ -56,6 +60,13 @@ else
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        Your cart is empty! Please add items to cart.
                     </div>
                 }
             </div>
@@ -96,10 +107,12 @@ else
 
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-success m-4">
-                        Looks Good? Place Order!
-                    </button>
+                    @if (ShoppingCarts.Any())
+                    {
+                        <button type="submit" class="btn btn-success m-4">
+                            Looks Good? Place Order!
+                        </button>
+                    }
                 </EditForm>
             </div>
         </div>
@@ -160,5 +173,6 @@ else
     {
         OrderHeader.OrderDetails = SD.ConvertShoppingCartListToOrderDetails(ShoppingCarts.ToList());
         await _orderRepository.CreateAsync(OrderHeader);
+        await _cartRepository.ClearCartAsync(OrderHeader.UserId);
     }
 }

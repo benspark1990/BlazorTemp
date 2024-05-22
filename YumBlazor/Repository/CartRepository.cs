@@ -45,5 +45,12 @@ namespace YumBlazor.Repository
         {
             return await _db.ShoppingCart.Where(u => u.UserId == userId).Include(u=>u.Product).ToListAsync();
         }
+
+        public async Task<bool> ClearCartAsync(string? userId)
+        {
+            var cartItems = await _db.ShoppingCart.Where(u => u.UserId == userId).ToListAsync();
+            _db.ShoppingCart.RemoveRange(cartItems);
+            return await _db.SaveChangesAsync() > 0;
+        }
     }
 }
