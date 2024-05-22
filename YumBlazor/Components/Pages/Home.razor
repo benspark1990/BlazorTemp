@@ -1,9 +1,12 @@
 ﻿@page "/"
 @using System.Globalization
-
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IJSRuntime _JS
 <PageTitle>Home</PageTitle>
 @inject IProductRepository _productRepository
 @inject ICategoryRepository _categoryRepository
+@inject ICartRepository _cartRepository
 @if (IsProcessing)
 {
     <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
@@ -70,9 +73,11 @@ else
                             <div class="card-body">
                                 <h3 class="text-center text-success">@product.Name</h3>
                                 <p class="card-text mt-2">@((MarkupString)@product.Description)</p>
-                                <h4 class="text-center">
-                                    <i class="bi bi-cart3 btn btn-success text-right px-5 form-control" > Add to cart</i>
-                                </h4>
+                                    <h4 class="text-center">
+                                        <div class="ml-auto p-2" @onclick="() => AddOrderItem(product)">
+                                        <i class="bi bi-cart3 btn btn-success text-right px-5 form-control" > Add to cart</i>
+                                        </div>
+                                    </h4>
                             </div>
                         </div>
                     </div>
@@ -120,9 +125,9 @@ else
         if (Categories.All(c => c.Id != categoryId))
             return;
 
-            FilteredProducts = Products.Where(p => p.CategoryId == categoryId).ToList();
-            _selectedCategoryId = categoryId;
-            _searchText = String.Empty;
+        FilteredProducts = Products.Where(p => p.CategoryId == categoryId).ToList();
+        _selectedCategoryId = categoryId;
+        _searchText = String.Empty;
     }
 
 
@@ -147,5 +152,26 @@ else
     {
         return categoryId == _selectedCategoryId ? "active" : string.Empty;
     }
+    private async Task AddOrderItem(Product product)
+    {
+        // await _cartRepository.UpdateCartAsync();
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var user = authState.User;
+        var authenticated = user.Identity is not null && user.Identity.IsAuthenticated;
 
+        //if user is not authenticated then redirect to login
+        if (!authenticated)
+        {
+            NavigationManager.NavigateTo("account/login");
+        }
+        else
+        {
+            var result = await _cartRepository.UpdateCartAsync(user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value,product.Id,1);
+            if(result)
+                _JS?.ToastrSuccess("Product added to cart successfully");
+                else
+                _JS?.ToastrSuccess("Error encountered.");
+        }
+    }
 }

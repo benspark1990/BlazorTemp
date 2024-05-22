@@ -15,6 +15,10 @@ namespace YumBlazor.Repository
 
         public async Task<bool> UpdateCartAsync(string userId, int productId, int updateBy)
         {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return false;
+            }
             var cart = await _db.ShoppingCart.FirstOrDefaultAsync(u => u.UserId == userId && u.ProductId == productId);
             if (cart != null)
             {
