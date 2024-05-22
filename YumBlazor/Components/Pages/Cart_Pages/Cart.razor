@@ -64,21 +64,25 @@ else
 					Pickup Details
 				</div>
 				<div class="card-body">
-					<form>
+					<EditForm EditContext="editContext" FormName="CartForm">
+						<DataAnnotationsValidator />
+						<ValidationSummary />
 						<div class="form-group">
 							<label>Name</label>
-							<input type="text" class="form-control" />
+							<InputText @bind-Value="OrderHeader.Name" class="form-control" />
+							<ValidationMessage For="()=>OrderHeader.Name"></ValidationMessage>
 						</div>
 						<div class="form-group">
 							<label>Email</label>
-							<input type="text" class="form-control" />
+							<InputText @bind-Value="OrderHeader.Email" class="form-control" />
+							<ValidationMessage For="()=>OrderHeader.Email"></ValidationMessage>
 						</div>
 						<div class="form-group">
 							<label>Phone</label>
-							<input type="text" class="form-control" />
+							<InputText @bind-Value="OrderHeader.PhoneNumber" class="form-control" />
+							<ValidationMessage For="()=>OrderHeader.PhoneNumber"></ValidationMessage>
 						</div>
-
-					</form>
+					</EditForm>
 					<div class="card mt-4 bg-light">
 						<div class="card-body">
 							<h4>
@@ -102,8 +106,21 @@ else
 
 @code {
 	private IEnumerable<ShoppingCart> ShoppingCarts = new List<ShoppingCart>();
+	[SupplyParameterFromForm]
+	private OrderHeader OrderHeader { get; set; } = new OrderHeader();
+
 	private bool IsProcessing { get; set; } = true;
-	
+	private EditContext? editContext;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider
+			.GetAuthenticationStateAsync();
+		var user = authState.User;
+		OrderHeader.Email= user.FindFirst(u => u.Type.Contains("email"))?.Value;
+		editContext = new(OrderHeader);
+	}
+
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender)
