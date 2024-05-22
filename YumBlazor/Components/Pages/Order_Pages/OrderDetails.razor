@@ -7,84 +7,92 @@
 
 @if (IsProcessing)
 {
-	<div class="position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center"
-		 style="min-height:600px;">
-		<img src="/images/loading.gif" alt="loading" />
-	</div>
+    <div class="position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center"
+         style="min-height:600px;">
+        <img src="/images/loading.gif" alt="loading" />
+    </div>
 }
 else
 {
-		<div class="container my-5 mx-auto p-5 w-100" style="max-width: 750px;">
-			<div class="card" style="max-width: 750px;">
-				<div class="card-body">
-					<div class="mt-3 d-flex text-success display-6 card-title">
-						<div class="mr-auto">
-						Order No. : @OrderHeader.Id
-					</div>
-					
-					</div>
-				</div>
-				<hr />
-				<div class="px-3">
-				<p>Name: @OrderHeader.Name</p>
-				<p>Email: @OrderHeader.Email</p>
-				<p>Phone: @OrderHeader.PhoneNumber</p>
-				<p>Order Status:  @OrderHeader.Status</p>
-				</div>
-			<hr />
-				<div class="card-body">
-					<h4 class="text-success">Menu Items</h4>
-					@foreach(var details in OrderHeader.OrderDetails){
-						<div class="d-flex">
-							<div class="d-flex w-100 justify-content-between">
-								<p>
-									&nbsp; -- @details.Product.Name
-								</p>
-								<p>
-									@details.Price.ToString("C", CultureInfo.GetCultureInfo("en-us")) x @details.Count =
-								</p>
-							</div>
-							<div class="ps-4">
-								@((details.Price * details.Count).ToString("C", CultureInfo.GetCultureInfo("en-us")))
-							</div>
+    <div class="container my-5 mx-auto p-5 w-100" style="max-width: 750px;">
+        <div class="card" style="max-width: 750px;">
+            <div class="card-body">
+                <div class="mt-3 d-flex text-success display-6 card-title">
+                    <div class="mr-auto">
+                        Order No. : @OrderHeader.Id
+                    </div>
 
-						</div>
-					}
-					<hr />
-					<h4 class="text-success text-end">
-						@OrderHeader.OrderTotal.ToString("C", CultureInfo.GetCultureInfo("en-us"))
-					</h4>
-					<hr />
-					
-					<NavLink href="" class="mt-3 btn btn-secondary" style="width:300px;">Back to Orders</NavLink>
+                </div>
+            </div>
+            <hr />
+            <div class="px-3">
+                <p>Name: @OrderHeader.Name</p>
+                <p>Email: @OrderHeader.Email</p>
+                <p>Phone: @OrderHeader.PhoneNumber</p>
+                <p>Order Status:  @OrderHeader.Status</p>
+            </div>
+            <hr />
+            <div class="card-body">
+                <h4 class="text-success">Menu Items</h4>
+                @foreach (var details in OrderHeader.OrderDetails)
+                {
+                    <div class="d-flex">
+                        <div class="d-flex w-100 justify-content-between">
+                            <p>
+                                &nbsp; -- @details.Product.Name
+                            </p>
+                            <p>
+                                @details.Price.ToString("C", CultureInfo.GetCultureInfo("en-us")) x @details.Count =
+                            </p>
+                        </div>
+                        <div class="ps-4">
+                            @((details.Price * details.Count).ToString("C", CultureInfo.GetCultureInfo("en-us")))
+                        </div>
 
-				</div>
-			</div>
-		</div>
+                    </div>
+                }
+                <hr />
+                <h4 class="text-success text-end">
+                    @OrderHeader.OrderTotal.ToString("C", CultureInfo.GetCultureInfo("en-us"))
+                </h4>
+                <hr />
+
+                <div class="row">
+                    <div class="col-5">
+                        <NavLink href="" class="btn btn-secondary">Back to Orders</NavLink>
+                    </div>
+                    <div class="col-7 text-end">
+                        <button class="btn btn-danger">Cancelled</button>
+                        <button class="btn btn-success">Ready for Pickup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 }
 
 @code {
 
-	[Parameter]
-	public int Id { get; set; }
-	private OrderHeader? OrderHeader = null;
-	private bool IsProcessing { get; set; } = true;
+    [Parameter]
+    public int Id { get; set; }
+    private OrderHeader? OrderHeader = null;
+    private bool IsProcessing { get; set; } = true;
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			await GetOrderHeader();
-			IsProcessing = false;
-			StateHasChanged();
-		}
-	}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetOrderHeader();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
 
-	private async Task GetOrderHeader()
-	{
-		OrderHeader = await _orderRepository.GetAsync(Id);
-	}
+    private async Task GetOrderHeader()
+    {
+        OrderHeader = await _orderRepository.GetAsync(Id);
+    }
 
 }
