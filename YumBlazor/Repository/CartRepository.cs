@@ -39,7 +39,7 @@ namespace YumBlazor.Repository
 
         public async Task<IEnumerable<ShoppingCart>> GetAllAsync(string? userId)
         {
-            return await _db.ShoppingCart.Where(u => u.UserId == userId).ToListAsync();
+            return await _db.ShoppingCart.Where(u => u.UserId == userId).Include(u=>u.Product).ToListAsync();
         }
     }
 }
