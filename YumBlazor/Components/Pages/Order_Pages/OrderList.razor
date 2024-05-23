@@ -2,6 +2,7 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
 @inject IOrderRepository _orderRepository
+@inject NavigationManager _navigationManager
 @attribute [Authorize]
 @if (IsProcessing)
 {
@@ -23,35 +24,23 @@ else
         <div class="card-body p-4">
             @if (_orderHeaders.Any())
             {
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Phone</th>
-                            <th>Order Total</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var obj in _orderHeaders)
-                        {
-                            <tr>
-                                <td>@obj.Id</td>
-                                <td>@obj.Name</td>
-                                <td>@obj.PhoneNumber</td>
-                                <td>@obj.OrderTotal</td>
-                                <td>@obj.Status</td>
-                                <td>
-                                    <a href="@($"order/details/{obj.Id}")" class="btn btn-primary">
-                                        <i class="bi bi-pencil-square"></i> Details
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+
+                <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true"  ShowPagingSummary="true"
+                                Data="@_orderHeaders" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single">
+                    <Columns>
+                        <RadzenDataGridColumn Property="Id"  Title="ID" Width="80px" />
+                        <RadzenDataGridColumn Property="Name" Title="Name" Frozen="true" Width="160px" />
+                        <RadzenDataGridColumn Property="PhoneNumber" Title="Phone Number" Width="160px" />
+                        <RadzenDataGridColumn Property="OrderTotal" Title="Order total" Width="150px" FormatString="{0:C}" />
+                        <RadzenDataGridColumn Property="OrderDate" Title="Order Date" Width="150px" FormatString="{0:d}" />
+                        <RadzenDataGridColumn Property="Status" Title="Order Status" Width="120px"  />
+                        <RadzenDataGridColumn Title="Action" Frozen="true" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
+                            <Template Context="orderHeader">
+                                <RadzenButton Shade="Shade.Lighter" Click="@(()=>_navigationManager.NavigateTo($"order/details/{orderHeader.Id}"))" Text="Details" ButtonStyle="ButtonStyle.Primary" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
             }
         </div>
     </div>
