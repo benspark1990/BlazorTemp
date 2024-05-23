@@ -1,5 +1,6 @@
 ﻿@page "/product/create"
 @page "/product/update/{id:int}"
+@using Radzen.Blazor
 @inject IProductRepository _productRepository
 @inject ICategoryRepository _categoryRepository
 @inject NavigationManager _navigationManager
@@ -31,11 +32,25 @@ else
                         <label for="Name">Name</label>
                         <ValidationMessage For="@(() => Product.Name)" />
                     </div>
-                    <div class="form-floating py-3 col-12">
+                    <div class=" py-3 col-12">
                         <label for="Description">Description</label>
-                        <SfRichTextEditor @bind-Value="Product.Description" class="form-control border-0 shadow" >
-							<RichTextEditorToolbarSettings Items="@Tools" />
-						</SfRichTextEditor>
+                        <RadzenHtmlEditor @bind-Value="Product.Description" style="height: 300px;" >
+                            <RadzenHtmlEditorFontName />
+                            <RadzenHtmlEditorFontSize />
+                            <RadzenHtmlEditorOrderedList />
+                            <RadzenHtmlEditorUnorderedList />
+                            <RadzenHtmlEditorUndo />
+                            <RadzenHtmlEditorRedo />
+                            <RadzenHtmlEditorSeparator />
+                            <RadzenHtmlEditorBold />
+                            <RadzenHtmlEditorItalic />
+                            <RadzenHtmlEditorUnderline />
+                            <RadzenHtmlEditorStrikeThrough />
+                            <RadzenHtmlEditorSeparator />
+                            <RadzenHtmlEditorColor />
+                            <RadzenHtmlEditorBackground />
+                            <RadzenHtmlEditorRemoveFormat />
+                        </RadzenHtmlEditor>
                         <ValidationMessage For="@(() => Product.Description)" />
                     </div>
                     <div class="form-floating py-3 col-12">
@@ -110,36 +125,7 @@ else
 
     private string? _directoryPath { get; set; }
     private bool IsProcessing { get; set; } = true;
-    private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
-    {
-        new ToolbarItemModel() { Command = ToolbarCommand.Bold },
-        new ToolbarItemModel() { Command = ToolbarCommand.Italic },
-        new ToolbarItemModel() { Command = ToolbarCommand.Underline },
-        new ToolbarItemModel() { Command = ToolbarCommand.StrikeThrough },
-        new ToolbarItemModel() { Command = ToolbarCommand.FontName },
-        new ToolbarItemModel() { Command = ToolbarCommand.FontSize },
-        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
-        new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
-        new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
-        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
-        new ToolbarItemModel() { Command = ToolbarCommand.Formats },
-        new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
-        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
-        new ToolbarItemModel() { Command = ToolbarCommand.SuperScript },
-        new ToolbarItemModel() { Command = ToolbarCommand.SubScript },
-        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
-        new ToolbarItemModel() { Command = ToolbarCommand.OrderedList },
-        new ToolbarItemModel() { Command = ToolbarCommand.UnorderedList },
-        new ToolbarItemModel() { Command = ToolbarCommand.Outdent },
-        new ToolbarItemModel() { Command = ToolbarCommand.Indent },
-        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
-        new ToolbarItemModel() { Command = ToolbarCommand.CreateLink },
-        new ToolbarItemModel() { Command = ToolbarCommand.Image },
-        new ToolbarItemModel() { Command = ToolbarCommand.CreateTable },
-        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
-        new ToolbarItemModel() { Command = ToolbarCommand.Undo },
-        new ToolbarItemModel() { Command = ToolbarCommand.Redo }
-    };
+    
     protected override Task OnInitializedAsync()
     {
         _directoryPath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "product");
@@ -189,7 +175,7 @@ else
     {
         IsProcessing = true;
         var file = e.File;
-        FileInfo fileInfo = new(file.Name);
+        System.IO.FileInfo fileInfo = new(file.Name);
         var newFileName = $"{Guid.NewGuid()}.{fileInfo.Extension}";
         if (!Directory.Exists(_directoryPath))
         {
