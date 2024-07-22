@@ -68,28 +68,30 @@ else
                 Pickup Details
             </div>
             <div class="card-body">
-                <form>
+                    <EditForm EditContext="editCartContext" FormName="CartForm">
+                        <DataAnnotationsValidator/>
+                        <ValidationSummary/>
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" class="form-control" />
+                        <InputText type="text" class="form-control" @bind-Value="OrderHeader.Name" ></InputText>
                     </div>
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="text" class="form-control" />
+                        <InputText type="text" class="form-control" @bind-Value="OrderHeader.Email"></InputText>
                     </div>
                     <div class="form-group">
                         <label>Phone</label>
-                        <input type="text" class="form-control" />
+                        <InputText type="text" class="form-control" @bind-Value="OrderHeader.PhoneNumber"></InputText>
                     </div>
 
-                </form>
+                </EditForm>
                 <div class="card mt-4 bg-light">
                     <div class="card-body">
                         <h4>
-                            Grand Total: --$$--
+                                Grand Total: @OrderHeader.OrderTotal.ToString("C", CultureInfo.GetCultureInfo("en-us"))
                         </h4>
                         <h4>
-                            No. of Items: --COUNT--
+                            No. of Items: @TotalItems
                         </h4>
                     </div>
 
@@ -108,6 +110,18 @@ else
     private IEnumerable<ShoppingCart> ShoppingCarts = new List<ShoppingCart>();
     private bool IsProcessing { get; set; } = true;
 
+    [SupplyParameterFromForm]
+    private OrderHeader OrderHeader { get; set; } = new OrderHeader();
+    private EditContext? editCartContext;
+    private int TotalItems { get; set; } = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        OrderHeader.Email = user.FindFirst(u => u.Type.Contains("email"))?.Value;
+        editCartContext = new(OrderHeader);
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -123,6 +137,15 @@ else
         var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         ShoppingCarts = await _cartRepository.GetAllAsync(user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value);
+
+        OrderHeader.OrderTotal = 0;
+        TotalItems = 0;
+        foreach(var cart in ShoppingCarts)
+        {
+            OrderHeader.OrderTotal += (Convert.ToDouble(cart.Product.Price) * cart.Count);
+            TotalItems += cart.Count; 
+        }
+        OrderHeader.OrderTotal = Math.Round(OrderHeader.OrderTotal, 2);
     }
 
     private async Task UpdateCartItem(int productId, int updateBy)
