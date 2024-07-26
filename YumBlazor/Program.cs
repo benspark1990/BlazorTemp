@@ -33,21 +33,21 @@ builder.Services.AddAuthentication(options =>
 		options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 	})//https://developers.google.com/identity/oauth2/web/guides/get-google-api-clientid
 
-    .AddFacebook(options =>
-    {
-        options.AppId = "1160092848406864";
-        options.AppSecret = "a5313a1337e6d9f137b37ed2a4f7cc45";
-    })
-	.AddMicrosoftAccount(options =>
-	{
-		options.ClientId = "0b170a00-4d7f-4eaf-8235-523dddedfec7";
-		options.ClientSecret = "2Na8Q~y8yNpt9iB0kZTyJj22fojeyzsrCbQPma0D";
-	})
-	.AddGoogle(options =>
-    {
-        options.ClientId = "602908572279-8dcb674plmqg25evmb0c20fo2naru06u.apps.googleusercontent.com";
-        options.ClientSecret = "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";
-    })
+ //   .AddFacebook(options =>
+ //   {
+ //       options.AppId = "";
+ //       options.AppSecret = "";
+ //   })
+	//.AddMicrosoftAccount(options =>
+	//{
+	//	options.ClientId = "";
+	//	options.ClientSecret = "";
+	//})
+	//.AddGoogle(options =>
+ //   {
+ //       options.ClientId = "";
+ //       options.ClientSecret = "";
+ //   })
 .AddIdentityCookies();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
